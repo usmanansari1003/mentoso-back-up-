@@ -1,0 +1,47 @@
+/* style.css */
+
+body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    margin: 0;
+    background-color: #001F49; /* Set the background color of the whole page */
+}
+
+#chatbot {
+    max-width: 100%; /* Adjust the width to fit the viewport */
+    padding: 20px;
+    border-radius: 8px;
+    background-color: #FFFFFF;
+}
+
+#messages {
+    margin-bottom: 10px;
+    padding: 10px;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    overflow-y: auto;
+    max-height: 200px;
+}
+
+#userInput {
+    width: 100%; /* Make the input field full width */
+    box-sizing: border-box; /* Include padding and border in the width */
+    padding: 8px;
+    margin-bottom: 10px;
+}
+
+#submit {
+    width: 100%; /* Make the button full width */
+    padding: 8px 12px;
+    background-color: #00BBF3;
+    color: #FFFFFF;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+#submit:hover {
+    background-color: #0088CC;
+}

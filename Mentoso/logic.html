@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="chatbot">
+        <div id="messages"></div>
+        <input id="userInput" type="text" placeholder="Type your answer here..." />
+        <button id="submit">Submit</button>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const messagesDiv = document.getElementById('messages');
+            const userInput = document.getElementById('userInput');
+            const submitButton = document.getElementById('submit');
+
+            function askQuestion(questionNumber, question, options, additionalQuestion = false) {
+                return new Promise((resolve) => {
+                    const questionId = additionalQuestion ? `additional-question-${questionNumber}` : `question-${questionNumber}`;
+                    const questionContainer = createQuestionContainer(questionId, question, options);
+
+                    messagesDiv.innerHTML = ''; // Clear previous questions
+                    messagesDiv.appendChild(questionContainer);
+
+                    submitButton.onclick = function () {
+                        const userAnswer = userInput.value;
+
+                        if (isValidAnswer(userAnswer, options.length)) {
+                            hideElement(questionContainer);
+                            resolve(parseInt(userAnswer));
+                        } else {
+                            displayError('Invalid input. Please enter a number between 1 and ' + options.length + '.');
+                            resolve(askQuestion(questionNumber, question, options, additionalQuestion));
+                        }
+
+                        clearInputField();
+                    };
+                });
+            }
+
+            function createQuestionContainer(questionId, question, options) {
+                const questionContainer = document.createElement('div');
+                questionContainer.id = questionId;
+                questionContainer.classList.add('question-container');
+
+                const questionText = createParagraphElement('question', question);
+                questionContainer.appendChild(questionText);
+
+                options.forEach((option, index) => {
+                    const optionId = `${questionId}-option-${index + 1}`;
+                    const optionElement = createParagraphElement(`${questionId}-option`, `${index + 1}. ${option}`);
+                    optionElement.id = optionId;
+                    questionContainer.appendChild(optionElement);
+                });
+
+                return questionContainer;
+            }
+
+            function createParagraphElement(className, text) {
+                const element = document.createElement('p');
+                element.classList.add(className);
+                element.innerText = text;
+                return element;
+            }
+
+            function isValidAnswer(userAnswer, maxOptions) {
+                return !isNaN(userAnswer) && userAnswer >= 1 && userAnswer <= maxOptions;
+            }
+
+            function hideElement(element) {
+                element.style.display = 'none';
+            }
+
+            function displayError(errorMessage) {
+                const errorElement = createParagraphElement('error', errorMessage);
+                messagesDiv.appendChild(errorElement);
+            }
+
+            function clearInputField() {
+                userInput.value = '';
+            }
+
+            function calculateScore(answers) {
+                return answers.reduce((acc, curr) => acc + curr, 0);
+            }
+
+            const commonQuestionsData = [
+            { question: 'How would you describe your overall mood lately?', options: ['Very good', 'Good', 'Neutral', 'Bad', 'Very bad'] },
+    { question: 'How has your energy level been on average?', options: ['High', 'Moderate', 'Neutral', 'Low', 'Very low'] },
+    { question: 'Have you noticed any changes in your sleep patterns recently?', options: ['No changes', 'Trouble falling asleep', 'Waking up frequently', 'Trouble staying asleep', 'Insomnia'] },
+    { question: 'How often do you feel fatigued or lacking in energy?', options: ['Rarely', 'Occasionally', 'Frequently', 'Most of the time', 'Always'] },
+    { question: 'How would you rate your interest in activities you usually enjoy?', options: ['Very interested', 'Interested', 'Neutral', 'Not very interested', 'Not interested at all'] },
+    { question: 'How has your ability to concentrate or focus on tasks been?', options: ['Excellent', 'Good', 'Average', 'Poor', 'Very poor'] },
+    { question: 'Have you experienced changes in your appetite, either overeating or undereating?', options: ['No changes', 'Eating more than usual', 'Eating less than usual', 'No appetite at all', 'No appetite at all'] },
+    { question: 'How often do you find yourself feeling guilty or blaming yourself for things?', options: ['Rarely', 'Occasionally', 'Frequently', 'Most of the time', 'Always'] },
+    { question: 'How would you describe your self-esteem and confidence?', options: ['High', 'Moderate', 'Neutral', 'Low', 'Very low'] },
+    { question: 'Have you experienced a decrease in interest or pleasure in most activities?', options: ['Not at all', 'Rarely', 'Occasionally', 'Frequently', 'Always'] }
+ ];
+
+            const mildQuestionsData = [
+            { question: 'How has your ability to concentrate or focus on tasks been?', options: ['Very good', 'Good', 'Average', 'Poor', 'Very poor'] },
+    { question: 'Have you experienced changes in your appetite, either overeating or undereating?', options: ['High', 'Moderate', 'Trouble falling asleep', 'Trouble staying asleep', 'Insomnia'] },
+    { question: 'How often do you find yourself feeling guilty or blaming yourself for things?', options: ['No changes', 'Trouble falling asleep', 'Waking up frequently', 'Most of the time', 'Always'] },
+    { question: 'How would you describe your self-esteem and confidence?', options: ['Rarely', 'Occasionally', 'Frequently', 'Low', 'Very low'] },
+    { question: 'Have you experienced a decrease in interest or pleasure in most activities?', options: ['Very interested', 'Interested', 'Neutral', 'Not very interested', 'Not interested at all'] },
+    { question: 'How has your ability to make decisions been recently?', options: ['Excellent', 'Good', 'Average', 'Poor', 'Very poor'] },
+    { question: 'Have you had thoughts of death or suicidal ideation?', options: ['No changes', 'Eating more than usual', 'Eating less than usual', 'No appetite at all', 'No appetite at all'] },
+    { question: 'How would you describe your level of irritability or impatience?', options: ['Rarely', 'Occasionally', 'Frequently', 'Most of the time', 'Always'] },
+    { question: 'How often do you experience physical symptoms like aches, pains, or digestive issues?', options: ['High', 'Moderate', 'Neutral', 'Low', 'Very low'] },
+    { question: 'How has your interest in the future been lately?', options: ['Not at all', 'Rarely', 'Occasionally', 'Frequently', 'Always'] }
+ ];
+
+            const moderateQuestionsData = [
+            { question: 'How often do you experience feelings of hopelessness?', options: ['Rarely', 'Occasionally', 'Frequently', 'Most of the time', 'Always'] },
+    { question: 'How has your ability to cope with stressors been lately?', options: ['Excellent', 'Good', 'Average', 'Poor', 'Very poor'] },
+    { question: 'Have you noticed changes in your weight recently?', options: ['No changes', 'Weight gain', 'Weight loss', 'Significant changes', 'Unable to handle responsibilities'] },
+    { question: 'How would you describe your motivation to accomplish daily tasks?', options: ['Very motivated', 'Motivated', 'Neutral', 'Demotivated', 'Very demotivated'] },
+    { question: 'How often do you experience feelings of loneliness or isolation?', options: ['Rarely', 'Occasionally', 'Frequently', 'Most of the time', 'Always'] },
+    { question: 'How satisfied are you with your relationships?', options: ['Very satisfied', 'Satisfied', 'Neutral', 'Poor', 'Very dissatisfied'] },
+    { question: 'Have you noticed changes in your level of social engagement?', options: ['Increased engagement', 'Stable engagement', 'Slightly decreased engagement', 'Moderately decreased engagement', 'Significantly decreased engagement'] },
+    { question: 'How often do you experience intrusive or negative thoughts?', options: ['Rarely', 'Occasionally', 'Frequently', 'Most of the time', 'Always'] },
+    { question: 'How would you describe your ability to relax and unwind?', options: ['Excellent', 'Good', 'Average', 'Poor', 'Very poor'] },
+    { question: 'Have you observed changes in your overall level of productivity?', options: ['Increased productivity', 'Stable productivity', 'Slightly decreased productivity', 'Moderately decreased productivity', 'Significantly decreased productivity'] }
+ // Add more questions as needed
+            ];
+
+            async function startChat() {
+                const answers = [];
+
+                for (let i = 0; i < 10; i++) {
+                    const questionNumber = i + 1;
+                    const question = commonQuestionsData[i]['question'];
+                    const options = commonQuestionsData[i]['options'];
+
+                    const answer = await askQuestion(questionNumber, question, options);
+
+                    answers.push(answer);
+                }
+
+                const totalScoreCommon = calculateScore(answers);
+
+                let additionalQuestions = null;
+
+                if (totalScoreCommon <= 30) {
+                    additionalQuestions = totalScoreCommon <= 14 ? moderateQuestionsData : mildQuestionsData;
+
+                    answers.length = 0;
+
+                    for (let i = 0; i < 10; i++) {
+                        const questionNumber = i + 1;
+                        const question = additionalQuestions[i]['question'];
+                        const options = additionalQuestions[i]['options'];
+
+                        const answer = await askQuestion(questionNumber, question, options, true);
+                        answers.push(answer);
+                    }
+
+                    const totalScoreAdditional = calculateScore(answers);
+
+                    // Determine depression level based on additional score
+                    const mildData = JSON.stringify(mildQuestionsData);
+                    const moderateData = JSON.stringify(moderateQuestionsData);
+                    const additionalData = JSON.stringify(additionalQuestions);
+
+                    if (additionalData === mildData) {
+                        if (totalScoreAdditional > 30) {
+                            window.location.href = "mild.html";
+                        } else if (totalScoreAdditional < 15) {
+                            window.location.href = "moderate.html";
+                        }
+                    } else if (additionalData === moderateData) {
+                        if (totalScoreAdditional > 30) {
+                            window.location.href = "moderate.html";
+                        } else if (totalScoreAdditional < 15) {
+                            window.location.href = "severe.html";
+                        }
+                    } else {
+                        window.location.href = "no.html";
+                    }
+                } else {
+                    window.location.href = "no.html";
+                }
+            }
+
+            userInput.addEventListener('keydown', function (event) {
+                if (event.key === 'Enter') {
+                    submitButton.click();
+                }
+            });
+
+            startChat();
+        });
+    </script>
+</body>
+</html>
